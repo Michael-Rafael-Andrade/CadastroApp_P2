@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons'; // Para usar ícone
+import { useTheme } from '../src/context/ThemeContext';
 
 // Função auxiliar para buscar usuários 
 const buscarUsuarios = async () => {
@@ -21,6 +22,7 @@ const buscarUsuarios = async () => {
 export function TelaListaUsuarios({ navigation }) {
     const [listaUsuarios, setListaUsuarios] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { theme } = useTheme();
 
     const ultimoToque = useRef(null);
     const ATRASO_TOQUE_DUPLO = 300; // Foi definido 300 milissegundos entre os cliques para ser considerado toque duplo.
@@ -92,20 +94,20 @@ export function TelaListaUsuarios({ navigation }) {
     // Função para renderizar cada item na lista ( o visual de cada usuário )
     const renderizarItem = ({ item }) => (
         <TouchableOpacity
-            style={estilos.itemContainer}
+            style={[estilos.itemContainer, { backgroundColor: theme.colors.surface }]}
             
             onPress={() => handleDoubleTap(item)}
         >
             <View style={estilos.infoContainer}>
-                <Text style={estilos.nome}>{item.nome}</Text>
-                <Text style={estilos.detalhe}>CPF: {item.cpf}</Text>
-                <Text style={estilos.detalhe}>Nasc.: {item.dataNascimento}</Text>
+                <Text style={[estilos.nome, { color: theme.colors.primary}]}>{item.nome}</Text>
+                <Text style={[estilos.detalhe, { color: theme.colors.text}]}>CPF: {item.cpf}</Text>
+                <Text style={[estilos.detalhe, { color: theme.colors.text}]}>Nasc.: {item.dataNascimento}</Text>
             </View>
             <TouchableOpacity
                 style={estilos.botaoEditar}
                 onPress={() => handleEditar(item)}
             >
-                <Ionicons name="create-outline" size={24} color="#007bff" />
+                <Ionicons name="create-outline" size={24} color={theme.colors.primary} />
             </TouchableOpacity>
 
             {/* botão para excluir */}
@@ -128,8 +130,8 @@ export function TelaListaUsuarios({ navigation }) {
     }
 
     return (
-        <View style={estilos.container}>
-            <Text style={estilos.titulo}>Lista de Usuários</Text>
+        <View style={[estilos.container, { backgroundColor: theme.colors.background }]}>
+            <Text style={[estilos.titulo, { color: theme.colors.text}]}>Lista de Usuários</Text>
             <FlatList
                 data={listaUsuarios}
                 keyExtractor={(item) => item.id}
@@ -158,15 +160,17 @@ const estilos = StyleSheet.create({
     itemContainer: {
         flexDirection: 'row',
         padding: 15,
-        backgroundColor: '#fff',
-        borderRadius: 8,
+        // backgroundColor: '#fff',
+        borderRadius: 12,
         marginBottom: 10,
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 1.41,
-        elevation: 2,
+        // sombra mais sutil
+        boxShadow: '0px 2px 3.84px rgb(0, 0, 0, 0.25)',
+        // shadowColor: '#000',
+        // shadowOffset: { width: 0, height: 2 },
+        // shadowOpacity: 0.1,
+        // shadowRadius: 3,
+        elevation: 3,
     },
     infoContainer: {
         flex: 1,

@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons'; // posso ou não usar icones para melhorar o design.
 import { ThemeProvider } from './src/context/ThemeContext';
+import { useTheme } from './src/context/ThemeContext';
 
 // importar as telas criadas
 import { TelaInicio } from './telas/TelaInicio';
@@ -20,6 +21,7 @@ const NavegadorStack = createNativeStackNavigator();
 
 /* Criar o componente que irá definir as abas (bottom tabs) */
 function NavegacaoAbas() {
+  const { theme } = useTheme();
   return (
     <NavegadorTabs.Navigator
       screenOptions={({ route }) => ({
@@ -39,8 +41,9 @@ function NavegacaoAbas() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#007bff',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.text,
+        tabBarStyle: { backgroundColor: theme.colors.surface },
         headerShown: false,
       })}
     >
@@ -84,10 +87,12 @@ function NavegacaoAbas() {
 
 {/* Componente principal que define a pilha de telas (Stack) */ }
 function NavegacaoPrincipal() {
+  const { theme } = useTheme();
   return (
     <NavegadorStack.Navigator
+      style={{ pointerEvents: 'box-none' }}
       screenOptions={{
-        headerStyle: { backgroundColor: '#007bff' },
+        headerStyle: { backgroundColor: theme.colors.primary },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
       }}
@@ -96,7 +101,10 @@ function NavegacaoPrincipal() {
       <NavegadorStack.Screen
         name="Principal"
         component={NavegacaoAbas}
-        options={{ title: 'Cadastro de Usuários' }}
+        options={{
+          title: 'Cadastro de Usuários',
+          contentStyle: { pointerEvents: 'box-none' }
+        }}
       />
 
       {/* Edição na Stack */}
@@ -116,7 +124,9 @@ function NavegacaoPrincipal() {
 export default function FuncaoPrincipal() {
   return (
     <ThemeProvider>
-      <NavigationContainer>
+      <NavigationContainer
+        style={{ pointerEvents: 'box-none' }}
+      >
         <NavegacaoPrincipal />
       </NavigationContainer>
     </ThemeProvider>

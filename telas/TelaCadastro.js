@@ -97,10 +97,10 @@ export function TelaCadastro() {
                 style={estilos.entrada}
                 value={nome}
                 onChangeText={setNome}
-                placeHolder="Digite o nome"
+                placeholder="Digite o nome"
             />
 
-            <Text style={estilos.rotudo}>CPF:</Text>
+            <Text style={estilos.rotulo}>CPF:</Text>
             <MaskInput
                 style={estilos.entrada}
                 value={cpf}
