@@ -16,7 +16,7 @@ import { TelaListaUsuarios } from './telas/TelaListaUsuarios';
 const NavegadorTabs = createBottomTabNavigator();
 const NavegadorStack = createNativeStackNavigator();
 
-// Criar o componente que irá definir as abas (bottom tabs)
+/* Criar o componente que irá definir as abas (bottom tabs) */
 function NavegacaoAbas() {
   return (
     <NavegadorTabs.Navigator
@@ -35,9 +35,9 @@ function NavegacaoAbas() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#007bff', // Cor azul para aba ativa
+        tabBarActiveTintColor: '#007bff', 
         tabBarInactiveTintColor: 'gray',
-        headerShown: false, // O Stack Navigator cuidará do cabeçalho
+        headerShown: false, 
       })}
     >
       <NavegadorTabs.Screen
@@ -51,6 +51,7 @@ function NavegacaoAbas() {
         options={{ title: 'Sobre o App' }}
       />
 
+      {/* tela de cadastro fixa. */}
       <NavegadorTabs.Screen
         name="Cadastro"
         component={TelaCadastro}
@@ -59,7 +60,7 @@ function NavegacaoAbas() {
             <Ionicons name="person-add" size={size} color={color} />
         )
       }}
-      /> // tela de cadastro fixa.
+      /> 
 
       <NavegadorTabs.Screen
         name="Lista"
@@ -71,13 +72,13 @@ function NavegacaoAbas() {
         }}
       />
       
-  
+
     </NavegadorTabs.Navigator>
   );
 }
 
 
-// Componente principal que define a pilha de telas (Stack)
+{/* Componente principal que define a pilha de telas (Stack) */}
 function NavegacaoPrincipal() {
   return (
     <NavegadorStack.Navigator
@@ -102,7 +103,7 @@ function NavegacaoPrincipal() {
   );
 }
 
-// A função principal que exporta nosso app
+{/* A função principal que exporta nosso app */}
 export default function FuncaoPrincipal() {
   return (
     <NavigationContainer>
