@@ -29,9 +29,11 @@ function NavegacaoAbas() {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Sobre') {
             iconName = focused ? 'information-circle' : 'information-circle-outline';
+          } else if (route.name === 'Lista'){
+            iconName = focused ? 'list' : 'list-outline';
+          } else if (route.name === 'Cadastro'){
+            iconName = focused ? 'person-add' : 'person-add-outline';
           }
-
-
 
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -56,7 +58,7 @@ function NavegacaoAbas() {
       <NavegadorTabs.Screen
         name="Cadastro"
         component={TelaCadastro}
-        option={{
+        options={{
           title: 'Cadastrar', tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-add" size={size} color={color} />
           )
