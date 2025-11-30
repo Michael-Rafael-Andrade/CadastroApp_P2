@@ -66,8 +66,8 @@ export function TelaListaUsuarios({ navigation }) {
 
     // Futura função para Editar
     const handleEditar = (usuario) => {
-        // Por enquanto, apenas alerta o nome. Será a funçãode navegação para a tela de edição
-        Alert.alert("Ação", `Você clicou para editar o usuário: ${usuario.nome}`);
+        navigation.navigate('Edicao', { usuario: usuario });
+        // Alert.alert("Ação", `Você clicou para editar o usuário: ${usuario.nome}`);
     };
 
 

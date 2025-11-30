@@ -11,6 +11,7 @@ import { TelaInicio } from './telas/TelaInicio';
 import { TelaSobre } from './telas/TelaSobre';
 import { TelaCadastro } from './telas/TelaCadastro';
 import { TelaListaUsuarios } from './telas/TelaListaUsuarios';
+import { TelaEdicaoUsuario } from './telas/TelaEdicaoUsuario';
 
 // Criar os navegadores
 const NavegadorTabs = createBottomTabNavigator();
@@ -35,9 +36,9 @@ function NavegacaoAbas() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#007bff', 
+        tabBarActiveTintColor: '#007bff',
         tabBarInactiveTintColor: 'gray',
-        headerShown: false, 
+        headerShown: false,
       })}
     >
       <NavegadorTabs.Screen
@@ -58,9 +59,9 @@ function NavegacaoAbas() {
         option={{
           title: 'Cadastrar', tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-add" size={size} color={color} />
-        )
-      }}
-      /> 
+          )
+        }}
+      />
 
       <NavegadorTabs.Screen
         name="Lista"
@@ -68,17 +69,17 @@ function NavegacaoAbas() {
         options={{
           title: 'Usuários', tabBarIcon: ({ color, size }) => (<Ionicons name="list" size={size} color={color} />
 
-        )
+          )
         }}
       />
-      
+
 
     </NavegadorTabs.Navigator>
   );
 }
 
 
-{/* Componente principal que define a pilha de telas (Stack) */}
+{/* Componente principal que define a pilha de telas (Stack) */ }
 function NavegacaoPrincipal() {
   return (
     <NavegadorStack.Navigator
@@ -95,7 +96,12 @@ function NavegacaoPrincipal() {
         options={{ title: 'Cadastro de Usuários' }}
       />
 
-
+      {/* Edição na Stack */}
+      <NavegadorStack.Screen
+        name="Edicao"
+        component={TelaEdicaoUsuario}
+        options={{ title: 'Editar Usuário' }}
+      />
 
 
 
@@ -103,7 +109,7 @@ function NavegacaoPrincipal() {
   );
 }
 
-{/* A função principal que exporta nosso app */}
+{/* A função principal que exporta nosso app */ }
 export default function FuncaoPrincipal() {
   return (
     <NavigationContainer>
