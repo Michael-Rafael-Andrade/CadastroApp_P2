@@ -11,7 +11,7 @@ export function TelaInicio({ navigation }){
             <Text style={estilos.subtitulo}>Navegue pelas abas abaixo e gerencie o cadastro de usuários da sua aplicação!</Text>
             <Button
                 title="VER USUÁRIOS CADASTRADOS"
-                onPress={() => navigation.navigate('ListaUsuarios')}
+                onPress={() => navigation.navigate('Lista')}
                 color="#28A745"
             />
         </View>
