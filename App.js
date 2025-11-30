@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons'; // posso ou não usar icones para melhorar o design.
+import { ThemeProvider } from './src/context/ThemeContext';
 
 // importar as telas criadas
 import { TelaInicio } from './telas/TelaInicio';
@@ -29,9 +30,9 @@ function NavegacaoAbas() {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Sobre') {
             iconName = focused ? 'information-circle' : 'information-circle-outline';
-          } else if (route.name === 'Lista'){
+          } else if (route.name === 'Lista') {
             iconName = focused ? 'list' : 'list-outline';
-          } else if (route.name === 'Cadastro'){
+          } else if (route.name === 'Cadastro') {
             iconName = focused ? 'person-add' : 'person-add-outline';
           }
 
@@ -114,8 +115,10 @@ function NavegacaoPrincipal() {
 {/* A função principal que exporta nosso app */ }
 export default function FuncaoPrincipal() {
   return (
-    <NavigationContainer>
-      <NavegacaoPrincipal />
-    </NavigationContainer>
+    <ThemeProvider>
+      <NavigationContainer>
+        <NavegacaoPrincipal />
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }
