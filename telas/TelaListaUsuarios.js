@@ -1,6 +1,6 @@
 // telas/TelaListaUsuarios.js
 // importar
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons'; // Para usar ícone
@@ -21,6 +21,9 @@ const buscarUsuarios = async () => {
 export function TelaListaUsuarios({ navigation }) {
     const [listaUsuarios, setListaUsuarios] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const ultimoToque = useRef(null);
+    const ATRASO_TOQUE_DUPLO = 300; // Foi definido 300 milissegundos entre os cliques para ser considerado toque duplo.
 
     const carregarDados = async () => {
         setLoading(true);
@@ -70,11 +73,29 @@ export function TelaListaUsuarios({ navigation }) {
         // Alert.alert("Ação", `Você clicou para editar o usuário: ${usuario.nome}`);
     };
 
+    // Função para modificar um item cadastrado ao dar dois cliques em cima
+    const handleDoubleTap = (usuario) => {
+        const agora = Date.now();
+        // verifica se há um toque anterior e se o tempo entre o toque atual é menor que o nosso anterior no limite (300ms).
+        if(ultimoToque.current && (agora - ultimoToque.current) < ATRASO_TOQUE_DUPLO) {
+            // É um toque duplo! chama a edição.
+            handleEditar(usuario);
+            // reseta o timestamp para evitar que o próximo toque seja considerado triplo, etc.
+            ultimoToque.current = null;
 
+        } else {
+            // É um toque simples. apenas registramos o tempo.
+            ultimoToque.current = agora;
+        }
+    };
 
     // Função para renderizar cada item na lista ( o visual de cada usuário )
     const renderizarItem = ({ item }) => (
-        <View style={estilos.itemContainer}>
+        <TouchableOpacity
+            style={estilos.itemContainer}
+            
+            onPress={() => handleDoubleTap(item)}
+        >
             <View style={estilos.infoContainer}>
                 <Text style={estilos.nome}>{item.nome}</Text>
                 <Text style={estilos.detalhe}>CPF: {item.cpf}</Text>
@@ -94,7 +115,7 @@ export function TelaListaUsuarios({ navigation }) {
             >
                 <Ionicons name="trash-outline" size={24} color="#dc3545" />
             </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
     );
 
     // Exibe um texto de carregamento se os dados ainda não vieram do AsyncStorage
