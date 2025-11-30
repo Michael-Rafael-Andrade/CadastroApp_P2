@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons'; // posso ou não usar icones para
 // importar as telas criadas
 import { TelaInicio } from './telas/TelaInicio';
 import { TelaSobre } from './telas/TelaSobre';
-// import { TelaCadastro } from './telas/TelaCadastro';
+import { TelaCadastro } from './telas/TelaCadastro';
 
 // Criar os navegadores
 const NavegadorTabs = createBottomTabNavigator();
@@ -49,6 +49,15 @@ function NavegacaoAbas() {
         component={TelaSobre}
         options={{ title: 'Sobre o App' }}
       />
+
+      <NavegadorTabs.Screen
+        name="Cadastro"
+        component={TelaCadastro}
+        option={{ title: 'Cadastrar', tabBarIcon: ({ color, size }) => (
+        <Ionicons name="person-add" size={size} color={color} /> // tela de cadastro fixa.
+       )}}
+      />
+
     </NavegadorTabs.Navigator>
   );
 }
