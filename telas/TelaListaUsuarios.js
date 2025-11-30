@@ -40,11 +40,48 @@ export function TelaListaUsuarios({ navigation }) {
         return unsubscribe;
     }, [navigation]);
 
+    // Função para excluir um usuário
+    const handleExcluir = async (idUsuario) => {
+        Alert.alert(
+            "Confirmação",
+            "Tem certeza que deseja excluir este usuário?",
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel"
+                },
+                {
+                    text: "Excluir",
+                    onPress: async () => {
+                        try {
+                            // Busca a lista atual
+                            const listaAtual = await buscarUsuarios();
+
+                            // Filtrar: criar uma nova lista sem o usuário excluído
+                            const listaAtualizada = listaAtual.filter(usuario => usuario.id !== idUsuario);
+
+                            // Recarregar a lista na tela para refletir a mudança
+                            carregarDados();
+
+                            alert("Usuário excluído com sucesso!");
+                        } catch (erro) {
+                            console.error("Erro ao excluir usuário: ", erro);
+                            alert("Falha ao excluir. Tente novamente. ");
+                        }
+                    },
+                    style: "destructive"
+                }
+            ]
+        );
+    };
+
     // Futura função para Editar
     const handleEditar = (usuario) => {
         // Por enquanto, apenas alerta o nome. Será a funçãode navegação para a tela de edição
         Alert.alert("Ação", `Você clicou para editar o usuário: ${usuario.nome}`);
     };
+
+
 
     // Função para renderizar cada item na lista ( o visual de cada usuário )
     const renderizarItem = ({ item }) => (
@@ -59,6 +96,14 @@ export function TelaListaUsuarios({ navigation }) {
                 onPress={() => handleEditar(item)}
             >
                 <Ionicons name="create-outline" size={24} color="#007bff" />
+            </TouchableOpacity>
+
+            {/* botão para excluir */}
+            <TouchableOpacity
+                style={estilos.botaoAcao}
+                onPress={() => handleExcluir(item.id)}
+            >
+                <Ionicons name="trash-outline" size={24} color="#dc3545" />
             </TouchableOpacity>
         </View>
     );
@@ -134,5 +179,11 @@ const estilos = StyleSheet.create({
         marginTop: 50,
         fontSize: 18,
         color: '#999',
-    }
+    },
+    botaoAcao: {
+        padding: 5,
+        marginLeft: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
