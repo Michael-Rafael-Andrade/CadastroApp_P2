@@ -1,14 +1,19 @@
 // telas/TelaInicio.js
 // importação
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 
 // função exportar
-export function TelaInicio(){
+export function TelaInicio({ navigation }){
     return (
         <View style={estilos.container}>
-            <Text style={estilos.titulo}> Bem-vindo ao APP - Full Stack - Cadastro Fácil</Text>
-            <Text style={estilos.subtitulo}>Navegue pelas abas abaixo.</Text>
+            <Text style={estilos.titulo}> Bem-vindo ao APP - Full Stack - Cadastro Fácil de usuários</Text>
+            <Text style={estilos.subtitulo}>Navegue pelas abas abaixo e gerencie o cadastro de usuários da sua aplicação!</Text>
+            <Button
+                title="VER USUÁRIOS CADASTRADOS"
+                onPress={() => navigation.navigate('ListaUsuarios')}
+                color="#28A745"
+            />
         </View>
     );
 }
