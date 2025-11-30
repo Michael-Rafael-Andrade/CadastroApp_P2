@@ -42,37 +42,26 @@ export function TelaListaUsuarios({ navigation }) {
 
     // Função para excluir um usuário
     const handleExcluir = async (idUsuario) => {
-        Alert.alert(
-            "Confirmação",
-            "Tem certeza que deseja excluir este usuário?",
-            [
-                {
-                    text: "Cancelar",
-                    style: "cancel"
-                },
-                {
-                    text: "Excluir",
-                    onPress: async () => {
-                        try {
-                            // Busca a lista atual
-                            const listaAtual = await buscarUsuarios();
+        // Usando confirm() do JavaScript para garantia de compatibilidade na Web
+        const confirmado = confirm("Tem certeza que deseja excluir este usuário?");
 
-                            // Filtrar: criar uma nova lista sem o usuário excluído
-                            const listaAtualizada = listaAtual.filter(usuario => usuario.id !== idUsuario);
+        if (confirmado) {
+            try {
+                // O restante da lógica de exclusão é a mesma
+                const listaAtual = await buscarUsuarios();
+                const listaAtualizada = listaAtual.filter(usuario => usuario.id !== idUsuario);
 
-                            // Recarregar a lista na tela para refletir a mudança
-                            carregarDados();
+                await AsyncStorage.setItem('USUARIOS_CADASTRADOS', JSON.stringify(listaAtualizada));
 
-                            alert("Usuário excluído com sucesso!");
-                        } catch (erro) {
-                            console.error("Erro ao excluir usuário: ", erro);
-                            alert("Falha ao excluir. Tente novamente. ");
-                        }
-                    },
-                    style: "destructive"
-                }
-            ]
-        );
+                // Recarrega a lista
+                carregarDados();
+
+                alert("Usuário excluído com sucesso!");
+            } catch (erro) {
+                console.error("Erro ao excluir usuário:", erro);
+                alert("Falha ao excluir. Tente novamente.");
+            }
+        }
     };
 
     // Futura função para Editar
