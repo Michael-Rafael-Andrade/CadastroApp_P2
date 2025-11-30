@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons'; // posso ou não usar icones para
 import { TelaInicio } from './telas/TelaInicio';
 import { TelaSobre } from './telas/TelaSobre';
 import { TelaCadastro } from './telas/TelaCadastro';
+import { TelaListaUsuarios } from './telas/TelaListaUsuarios';
 
 // Criar os navegadores
 const NavegadorTabs = createBottomTabNavigator();
@@ -28,7 +29,7 @@ function NavegacaoAbas() {
           } else if (route.name === 'Sobre') {
             iconName = focused ? 'information-circle' : 'information-circle-outline';
           }
-         
+
 
 
 
@@ -53,11 +54,24 @@ function NavegacaoAbas() {
       <NavegadorTabs.Screen
         name="Cadastro"
         component={TelaCadastro}
-        option={{ title: 'Cadastrar', tabBarIcon: ({ color, size }) => (
-        <Ionicons name="person-add" size={size} color={color} /> // tela de cadastro fixa.
-       )}}
-      />
+        option={{
+          title: 'Cadastrar', tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-add" size={size} color={color} />
+        )
+      }}
+      /> // tela de cadastro fixa.
 
+      <NavegadorTabs.Screen
+        name="Lista"
+        component={TelaListaUsuarios}
+        options={{
+          title: 'Usuários', tabBarIcon: ({ color, size }) => (<Ionicons name="list" size={size} color={color} />
+
+        )
+        }}
+      />
+      
+  
     </NavegadorTabs.Navigator>
   );
 }
@@ -79,7 +93,7 @@ function NavegacaoPrincipal() {
         component={NavegacaoAbas}
         options={{ title: 'Cadastro de Usuários' }}
       />
-      
+
 
 
 
