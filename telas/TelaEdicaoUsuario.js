@@ -5,21 +5,28 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, Alert, StyleSheet, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaskInput, { Masks } from 'react-native-mask-input';
+import { useUser } from '../src/context/UserContext';
+import { useTheme } from '../src/context/ThemeContext';
 
 // Função auxiliar para buscar todos os usuários (atualização)
-const getUsuarios = async () => {
-    try {
-        const jsonUsuarios = await AsyncStorage.getItem('USUARIOS_CADASTRADOS');
-        return jsonUsuarios != null ? JSON.parse(jsonUsuarios) : [];
-    } catch (erro) {
-        console.error("Erro ao buscar usuários: ", erro);
-        return [];
-    }
-};
+// const getUsuarios = async () => {
+//     try {
+//         const jsonUsuarios = await AsyncStorage.getItem('USUARIOS_CADASTRADOS');
+//         return jsonUsuarios != null ? JSON.parse(jsonUsuarios) : [];
+//     } catch (erro) {
+//         console.error("Erro ao buscar usuários: ", erro);
+//         return [];
+//     }
+// };
 
 export function TelaEdicaoUsuario({ route, navigation }) {
     // O parâmetro 'route' será usado para receber os dados do usuário a ser editado.
+
     const { usuario } = route.params;
+    const { theme } = useTheme();
+    const { editUser, users } = useUser();
+
+
 
     // Pré-preenchimento do estado atual
     const [nome, setNome] = useState(usuario.nome);
@@ -28,7 +35,7 @@ export function TelaEdicaoUsuario({ route, navigation }) {
     const [endereco, setEndereco] = useState(usuario.endereco);
     const [telefone, setTelefone] = useState(usuario.telefone);
 
-    // 2. Lógica para Salvar a Edição
+    // Lógica para Salvar a Edição
     const handleSalvarEdicao = async () => {
         // Validação Simples
         if (!nome || !cpf || !dataNascimento || !endereco || !telefone) {
@@ -47,16 +54,18 @@ export function TelaEdicaoUsuario({ route, navigation }) {
         };
 
         try {
-            // Buscar a lista completa
-            const listaAtual = await getUsuarios();
+            // // Buscar a lista completa
+            // const listaAtual = await getUsuarios();
 
-            // Mapear/Encontrar: Substituir o usuário antigo pelo novo, usando o ID
-            const listaAtualizada = listaAtual.map(u =>
-                u.id === usuario.id ? usuarioEditado : u
-            );
+            // // Mapear/Encontrar: Substituir o usuário antigo pelo novo, usando o ID
+            // const listaAtualizada = listaAtual.map(u =>
+            //     u.id === usuario.id ? usuarioEditado : u
+            // );
 
-            // Salvar a nova lista no AsyncStorage
-            await AsyncStorage.setItem('USUARIOS_CADASTRADOS', JSON.stringify(listaAtualizada));
+            // // Salvar a nova lista no AsyncStorage
+            // await AsyncStorage.setItem('USUARIOS_CADASTRADOS', JSON.stringify(listaAtualizada));
+
+            await editUser(usuarioEditado);
 
             Alert.alert('Sucesso', 'Dados do usuário atualizados!');
 
@@ -71,24 +80,22 @@ export function TelaEdicaoUsuario({ route, navigation }) {
 
 
     return (
-        <ScrollView style={estilos.container}>
-            <Text style={estilos.titulo}>Editando: {usuario.nome}</Text>
-            <Text style={estilos.subtitulo}>ID: {usuario.id}</Text>
-
-            {/* TODOS OS CAMPOS DO FORMULÁRIO SÃO REPLICADOS DA TELA DE CADASTRO */}
+        <ScrollView style={[estilos.container, { backgroundColor: theme.colors.background }]}>
+            <Text style={[estilos.titulo, { color: theme.colors.text }]}>Editando: {usuario.nome}</Text>
+            <Text style={[estilos.subtitulo, { color: theme.colors.text }]}>ID: {usuario.id}</Text>
 
             {/* Campo NOME */}
-            <Text style={estilos.rotulo}>Nome Completo:</Text>
+            <Text style={[estilos.rotulo, { color: theme.colors.text }]}>Nome Completo:</Text>
             <TextInput
-                style={estilos.entrada}
+                style={[estilos.entrada, { backgroundColor: theme.colors.surface, color: theme.colors.text, borderColor: theme.colors.border }]}
                 value={nome}
                 onChangeText={setNome}
             />
 
             {/* Campo CPF (Usando máscara) */}
-            <Text style={estilos.rotulo}>CPF:</Text>
+            <Text style={[estilos.rotulo, { color: theme.colors.text }]}>CPF:</Text>
             <MaskInput
-                style={estilos.entrada}
+                style={[estilos.entrada, { backgroundColor: theme.colors.surface, color: theme.colors.text, borderColor: theme.colors.border }]}
                 value={cpf}
                 onChangeText={(masked, unmasked) => setCpf(masked)}
                 mask={Masks.CPF}
@@ -96,9 +103,9 @@ export function TelaEdicaoUsuario({ route, navigation }) {
             />
 
             {/* Campo DATA DE NASCIMENTO (Usando máscara dd/mm/aaaa) */}
-            <Text style={estilos.rotulo}>Data de Nascimento:</Text>
+            <Text style={[estilos.rotulo, { color: theme.colors.text }]}>Data de Nascimento:</Text>
             <MaskInput
-                style={estilos.entrada}
+                style={[estilos.entrada, { backgroundColor: theme.colors.surface, color: theme.colors.text, borderColor: theme.colors.border }]}
                 value={dataNascimento}
                 onChangeText={(masked, unmasked) => setDataNascimento(masked)}
                 mask={Masks.DATE_DDMMYYYY}
@@ -106,17 +113,17 @@ export function TelaEdicaoUsuario({ route, navigation }) {
             />
 
             {/* Campo ENDEREÇO */}
-            <Text style={estilos.rotulo}>Endereço:</Text>
+            <Text style={[estilos.rotulo, { color: theme.colors.text }]}>Endereço:</Text>
             <TextInput
-                style={estilos.entrada}
+                style={[estilos.entrada, { backgroundColor: theme.colors.surface, color: theme.colors.text, borderColor: theme.colors.border }]}
                 value={endereco}
                 onChangeText={setEndereco}
             />
 
             {/* Campo TELEFONE (Usando máscara) */}
-            <Text style={estilos.rotulo}>Telefone:</Text>
+            <Text style={[estilos.rotulo, { color: theme.colors.text }]}>Telefone:</Text>
             <MaskInput
-                style={estilos.entrada}
+                style={[estilos.entrada, { backgroundColor: theme.colors.surface, color: theme.colors.text, borderColor: theme.colors.border }]}
                 value={telefone}
                 onChangeText={(masked, unmasked) => setTelefone(masked)}
                 mask={Masks.BRL_PHONE}
@@ -128,10 +135,9 @@ export function TelaEdicaoUsuario({ route, navigation }) {
                 <Button
                     title="SALVAR ALTERAÇÕES"
                     onPress={handleSalvarEdicao}
-                    color="#007bff" // Azul
+                    color={theme.colors.primary}
                 />
             </View>
-
         </ScrollView>
     );
 }

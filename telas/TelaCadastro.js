@@ -1,18 +1,18 @@
 // telas/TelaCadastro.js
 // importação
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Importaremos esta biblioteca para formatação de data e cpf para o formatato escolhido como padrão.
-// Para isto vou instalar um pacote para auxiliar na formatação da mascara que usarei no meu projeto. 
-// npm install react-native-mask-input
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert } from 'react-native'; // INSERÇÃO: Alert para pop-up, Removida importação de AsyncStorage
+import { useNavigation } from '@react-navigation/native'; // INSERÇÃO: Hook para navegar de volta
+import { useUser } from '../src/context/UserContext';
+// ...
 import MaskInput, { Masks } from 'react-native-mask-input';
-
 
 
 // exporta a função
 export function TelaCadastro() {
+    const { addUser } = useUser();
+    const navigation = useNavigation(); // INSERÇÃO: Obtém o objeto de navegação
+
     //Definir estado inicial 
     const [nome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
@@ -21,31 +21,22 @@ export function TelaCadastro() {
     const [telefone, setTelefone] = useState('');
 
 
-    const getUsuarios = async () => {
-        try {
-            const jsonUsuarios = await AsyncStorage.getItem('USUARIOS_CADASTRADOS');
-            // Se houver dados, retorna a lista parseada, senão, retorna um array vazio
-            return jsonUsuarios != null ? JSON.parse(jsonUsuarios) : [];
-        } catch (erro) {
-            console.error("Erro ao buscar usuários: ", erro);
-            return [];
-        }
-    };
+    // REMOÇÃO: A função getUsuarios foi removida. O Context gerencia a busca.
+    // ...
 
     // função para tratar o cadastro
     const handleCadastrar = async () => {
         // validação simples
         if (!nome || !cpf || !dataNascimento || !endereco || !telefone) {
-            alert("Preencha todos os campos antes de cadastrar!");
+            Alert.alert("Erro", "Preencha todos os campos antes de cadastrar!"); // MODIFICAÇÃO: Uso de Alert.alert em vez de alert simples
             return;
         }
 
-        // Gerar um ID único - simples (Timestamp)
-        const novoId = Date.now().toString();
+        // REMOÇÃO: A geração do ID foi removida. O Context (addUser) agora a faz.
 
         // Criar o objeto do novo usuário
         const novoUsuario = {
-            id: novoId,
+            // REMOÇÃO: O 'id' não é mais incluído aqui
             nome: nome,
             cpf: cpf,
             dataNascimento: dataNascimento,
@@ -54,18 +45,11 @@ export function TelaCadastro() {
         };
 
         try {
-            // Bucar a lista atual de usuários
-            const listaAtual = await getUsuarios();
+            // MODIFICAÇÃO: Chama a função centralizada do Context para adicionar e salvar no AsyncStorage
+            await addUser(novoUsuario);
 
-            // Adicionar o novo usuário na lista ou à lista
-            listaAtual.push(novoUsuario);
+            Alert.alert('Sucesso', 'Usuário cadastrado com sucesso!'); // MODIFICAÇÃO: Uso de Alert.alert
 
-            // Salvar a lista atualizada no AsyncStorage (convertendo para string)
-            await AsyncStorage.setItem('USUARIOS_CADASTRADOS', JSON.stringify(listaAtual));
-
-            alert('Usuário cadastrado com sucesso!');
-
-            // Limpar o formulário
             // Limpar o formulário
             setNome('');
             setCpf('');
@@ -73,19 +57,13 @@ export function TelaCadastro() {
             setEndereco('');
             setTelefone('');
 
-        } catch (erro){
+            // (INSERÇÃO: Navega de volta após o sucesso
+            navigation.goBack();
+
+        } catch (erro) {
             console.error('Erro ao salvar o usuário: ', erro);
-            alert('Falha ao salvar o usuário. Tente novamente. ');
+            Alert.alert('Falha', 'Falha ao salvar o usuário. Tente novamente. '); // MODIFICAÇÃO: Uso de Alert.alert
         }
-
-        // Não irei mais precisar deste trecho de código.
-        // console.log('--- Dados do Novo Usuário ---');
-        // console.log('Nome: ', nome);
-        // console.log('CPF: ', cpf);
-        // console.log('Data de nascimento: ', dataNascimento);
-        // console.log('Endereco: ', endereco);
-        // console.log('Telefone: ', telefone);
-
     };
 
     return (
@@ -116,6 +94,8 @@ export function TelaCadastro() {
                 value={dataNascimento}
                 onChangeText={(masked, unmasked) => setDataNascimento(masked)}
                 mask={MaskInput.DATE_DDMMYYYY}
+                keyboardType="numeric"
+                placeholder="DD/MM/AAAA"
             />
 
             <Text style={estilos.rotulo}>Endereço:</Text>

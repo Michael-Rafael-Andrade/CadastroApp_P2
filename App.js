@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons'; // posso ou não usar icones para melhorar o design.
 import { ThemeProvider } from './src/context/ThemeContext';
 import { useTheme } from './src/context/ThemeContext';
+import { UserProvider } from './src/context/UserContext';
 
 // importar as telas criadas
 import { TelaInicio } from './telas/TelaInicio';
@@ -124,11 +125,13 @@ function NavegacaoPrincipal() {
 export default function FuncaoPrincipal() {
   return (
     <ThemeProvider>
+      <UserProvider>
       <NavigationContainer
         style={{ pointerEvents: 'box-none' }}
       >
         <NavegacaoPrincipal />
       </NavigationContainer>
+      </UserProvider>
     </ThemeProvider>
   );
 }

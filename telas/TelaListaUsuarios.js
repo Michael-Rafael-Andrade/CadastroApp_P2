@@ -9,7 +9,8 @@ import { useTheme } from '../src/context/ThemeContext';
 // Função auxiliar para buscar usuários 
 const buscarUsuarios = async () => {
     try {
-        const jsonUsuarios = await AsyncStorage.getItem('USUARIOS_CADASTRADOS');
+        // const jsonUsuarios = await AsyncStorage.getItem('USUARIOS_CADASTRADOS');
+        const jsonUsuarios = await AsyncStorage.getItem('@CadastroApp:users');
         // Se houver dados, retorna a lista parseada, senão, um array vazio.
         return jsonUsuarios != null ? JSON.parse(jsonUsuarios) : [];
     } catch (erro) {
@@ -56,7 +57,8 @@ export function TelaListaUsuarios({ navigation }) {
                 const listaAtual = await buscarUsuarios();
                 const listaAtualizada = listaAtual.filter(usuario => usuario.id !== idUsuario);
 
-                await AsyncStorage.setItem('USUARIOS_CADASTRADOS', JSON.stringify(listaAtualizada));
+                // await AsyncStorage.setItem('USUARIOS_CADASTRADOS', JSON.stringify(listaAtualizada));
+                await AsyncStorage.setItem('@CadastroApp:users', JSON.stringify(listaAtualizada));
 
                 // Recarrega a lista
                 carregarDados();
