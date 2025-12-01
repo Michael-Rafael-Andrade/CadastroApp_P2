@@ -110,7 +110,7 @@ function NavegacaoPrincipal() {
 
       {/* Edição na Stack */}
       <NavegadorStack.Screen
-        name="Edicao"
+        name="TelaEdicaoUsuario"
         component={TelaEdicaoUsuario}
         options={{ title: 'Editar Usuário' }}
       />
@@ -126,11 +126,11 @@ export default function FuncaoPrincipal() {
   return (
     <ThemeProvider>
       <UserProvider>
-      <NavigationContainer
-        style={{ pointerEvents: 'box-none' }}
-      >
-        <NavegacaoPrincipal />
-      </NavigationContainer>
+        <NavigationContainer
+          style={{ pointerEvents: 'box-none' }}
+        >
+          <NavegacaoPrincipal />
+        </NavigationContainer>
       </UserProvider>
     </ThemeProvider>
   );

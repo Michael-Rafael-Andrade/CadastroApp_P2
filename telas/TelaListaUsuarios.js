@@ -1,110 +1,85 @@
 // telas/TelaListaUsuarios.js
 // importar
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons'; // Para usar ícone
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, TextInput } from 'react-native'; // 
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/context/ThemeContext';
+import { useUser } from '../src/context/UserContext'; // MUDOU!!!! Importa o Contexto de Usuários
 
-// Função auxiliar para buscar usuários 
-const buscarUsuarios = async () => {
-    try {
-        // const jsonUsuarios = await AsyncStorage.getItem('USUARIOS_CADASTRADOS');
-        const jsonUsuarios = await AsyncStorage.getItem('@CadastroApp:users');
-        // Se houver dados, retorna a lista parseada, senão, um array vazio.
-        return jsonUsuarios != null ? JSON.parse(jsonUsuarios) : [];
-    } catch (erro) {
-        console.error("Erro ao buscar usuários: ", erro);
-        return [];
-    }
-};
+
 
 // Exporta a função
 export function TelaListaUsuarios({ navigation }) {
-    const [listaUsuarios, setListaUsuarios] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const {
+        users, // É a lista JÁ FILTRADA pelo termoBusca
+        loading,
+        deleteUser, // Função de exclusão do Contexto
+        setTermoBusca // Função para definir o termo de busca
+    } = useUser();
+
     const { theme } = useTheme();
 
     const ultimoToque = useRef(null);
-    const ATRASO_TOQUE_DUPLO = 300; // Foi definido 300 milissegundos entre os cliques para ser considerado toque duplo.
+    const ATRASO_TOQUE_DUPLO = 300;
 
-    const carregarDados = async () => {
-        setLoading(true);
-        const usuarios = await buscarUsuarios();
-        setListaUsuarios(usuarios);
-        setLoading(false);
-    };
-
-    // utilizar o useEffect para recarregar a lista sempre que a tela é focada
     useEffect(() => {
-        // Adicona um listener para recarregar a lista sempre que a tela for visitada.
         const unsubscribe = navigation.addListener('focus', () => {
-            carregarDados();
+            // Opcional: Limpar a busca ao focar na tela de lista
+            setTermoBusca('');
         });
-
-        // Retorna a função de limpeza do listener
         return unsubscribe;
-    }, [navigation]);
+    }, [navigation, setTermoBusca]);
 
-    // Função para excluir um usuário
-    const handleExcluir = async (idUsuario) => {
-        // Usando confirm() do JavaScript para garantia de compatibilidade na Web
+    const handleExcluir = (idUsuario) => {
         const confirmado = confirm("Tem certeza que deseja excluir este usuário?");
-
         if (confirmado) {
-            try {
-                // O restante da lógica de exclusão é a mesma
-                const listaAtual = await buscarUsuarios();
-                const listaAtualizada = listaAtual.filter(usuario => usuario.id !== idUsuario);
-
-                // await AsyncStorage.setItem('USUARIOS_CADASTRADOS', JSON.stringify(listaAtualizada));
-                await AsyncStorage.setItem('@CadastroApp:users', JSON.stringify(listaAtualizada));
-
-                // Recarrega a lista
-                carregarDados();
-
-                alert("Usuário excluído com sucesso!");
-            } catch (erro) {
-                console.error("Erro ao excluir usuário:", erro);
-                alert("Falha ao excluir. Tente novamente.");
-            }
+            (async () => {
+                try {
+                    await deleteUser(idUsuario);
+                    setTermoBusca('');
+                    alert("Usuário excluído com sucesso!");
+                } catch (erro) {
+                    console.error("Erro ao excluir usuário:", erro);
+                    alert("Falha ao excluir. Tente novamente.");
+                }
+            })();
         }
     };
 
-    // Futura função para Editar
+    // função para Editar
     const handleEditar = (usuario) => {
-        navigation.navigate('Edicao', { usuario: usuario });
-        // Alert.alert("Ação", `Você clicou para editar o usuário: ${usuario.nome}`);
+        navigation.navigate('TelaEdicaoUsuario', { usuario: usuario });
     };
 
-    // Função para modificar um item cadastrado ao dar dois cliques em cima
     const handleDoubleTap = (usuario) => {
         const agora = Date.now();
-        // verifica se há um toque anterior e se o tempo entre o toque atual é menor que o nosso anterior no limite (300ms).
-        if(ultimoToque.current && (agora - ultimoToque.current) < ATRASO_TOQUE_DUPLO) {
-            // É um toque duplo! chama a edição.
+        if (ultimoToque.current && (agora - ultimoToque.current) < ATRASO_TOQUE_DUPLO) {
             handleEditar(usuario);
-            // reseta o timestamp para evitar que o próximo toque seja considerado triplo, etc.
             ultimoToque.current = null;
-
         } else {
-            // É um toque simples. apenas registramos o tempo.
             ultimoToque.current = agora;
         }
     };
 
     // Função para renderizar cada item na lista ( o visual de cada usuário )
     const renderizarItem = ({ item }) => (
-        <TouchableOpacity
+        // O contêiner principal da linha agora é uma View (para estilos)
+        <View
             style={[estilos.itemContainer, { backgroundColor: theme.colors.surface }]}
-            
-            onPress={() => handleDoubleTap(item)}
         >
-            <View style={estilos.infoContainer}>
-                <Text style={[estilos.nome, { color: theme.colors.primary}]}>{item.nome}</Text>
-                <Text style={[estilos.detalhe, { color: theme.colors.text}]}>CPF: {item.cpf}</Text>
-                <Text style={[estilos.detalhe, { color: theme.colors.text}]}>Nasc.: {item.dataNascimento}</Text>
-            </View>
+            {/* É um TouchableOpacity para o toque duplo */}
+            <TouchableOpacity
+                style={estilos.infoContainer} // Estilo do container de info
+                onPress={() => handleDoubleTap(item)} // RESTAURAMOS O TOQUE DUPLO AQUI
+            >
+                <Text style={[estilos.nome, { color: theme.colors.primary }]}>{item.nome}</Text>
+                <Text style={[estilos.detalhe, { color: theme.colors.text }]}>CPF: {item.cpf}</Text>
+                <Text style={[estilos.detalhe, { color: theme.colors.text }]}>
+                    {item.dataNascimento ? `Nasc.: ${item.dataNascimento}` : 'Nasc.: N/A'}
+                </Text>
+            </TouchableOpacity>
+
+            {/* Botão de Editar (Irmão, não aninhado) */}
             <TouchableOpacity
                 style={estilos.botaoEditar}
                 onPress={() => handleEditar(item)}
@@ -112,20 +87,19 @@ export function TelaListaUsuarios({ navigation }) {
                 <Ionicons name="create-outline" size={24} color={theme.colors.primary} />
             </TouchableOpacity>
 
-            {/* botão para excluir */}
+            {/* Botão de Excluir (Irmão, não aninhado) */}
             <TouchableOpacity
                 style={estilos.botaoAcao}
                 onPress={() => handleExcluir(item.id)}
             >
                 <Ionicons name="trash-outline" size={24} color="#dc3545" />
             </TouchableOpacity>
-        </TouchableOpacity>
+        </View>
     );
-
     // Exibe um texto de carregamento se os dados ainda não vieram do AsyncStorage
     if (loading) {
-        return <View style={estilos.container}>
-            <Text style={estilos.listaVazia}>
+        return <View style={[estilos.container, { backgroundColor: theme.colors.background }]}>
+            <Text style={[estilos.listaVazia, { color: theme.colors.text }]}>
                 Carregando...
             </Text>
         </View>;
@@ -133,13 +107,26 @@ export function TelaListaUsuarios({ navigation }) {
 
     return (
         <View style={[estilos.container, { backgroundColor: theme.colors.background }]}>
-            <Text style={[estilos.titulo, { color: theme.colors.text}]}>Lista de Usuários</Text>
+            <Text style={[estilos.titulo, { color: theme.colors.text }]}>Lista de Usuários</Text>
+
+            {/* CAMPO DE BUSCA (FILTRO) */}
+            <TextInput
+                style={[estilos.inputBusca, {
+                    color: theme.colors.text,
+                    borderColor: theme.colors.border,
+                    backgroundColor: theme.colors.card
+                }]}
+                placeholder="🔍 Buscar por nome, CPF ou email..."
+                placeholderTextColor={theme.colors.textSecondary}
+                onChangeText={setTermoBusca}
+            />
+
             <FlatList
-                data={listaUsuarios}
-                keyExtractor={(item) => item.id}
+                data={users}
+                keyExtractor={(item) => String(item.id)}
                 renderItem={renderizarItem}
                 ListEmptyComponent={() => (
-                    <Text style={estilos.listaVazia}>Nenhum usuário cadastrado. Vá para a aba 'Cadastrar'.</Text>
+                    <Text style={[estilos.listaVazia, { color: theme.colors.textSecondary }]}>Nenhum usuário encontrado. Vá para a aba 'Cadastrar'.</Text>
                 )}
             />
         </View>
@@ -159,20 +146,25 @@ const estilos = StyleSheet.create({
         color: '#333',
         textAlign: 'center',
     },
+    inputBusca: {
+        height: 45,
+        borderWidth: 1,
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 8,
+    },
     itemContainer: {
         flexDirection: 'row',
         padding: 15,
-        // backgroundColor: '#fff',
         borderRadius: 12,
         marginBottom: 10,
         alignItems: 'center',
-        // sombra mais sutil
-        boxShadow: '0px 2px 3.84px rgb(0, 0, 0, 0.25)',
+        // elevation: 3,
         // shadowColor: '#000',
         // shadowOffset: { width: 0, height: 2 },
         // shadowOpacity: 0.1,
         // shadowRadius: 3,
-        elevation: 3,
+        boxShadow: '0px 2px 3px rgba(0, 0, 0, 0.1)',
     },
     infoContainer: {
         flex: 1,
@@ -194,7 +186,6 @@ const estilos = StyleSheet.create({
         textAlign: 'center',
         marginTop: 50,
         fontSize: 18,
-        color: '#999',
     },
     botaoAcao: {
         padding: 5,

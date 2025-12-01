@@ -8,17 +8,6 @@ import MaskInput, { Masks } from 'react-native-mask-input';
 import { useUser } from '../src/context/UserContext';
 import { useTheme } from '../src/context/ThemeContext';
 
-// Função auxiliar para buscar todos os usuários (atualização)
-// const getUsuarios = async () => {
-//     try {
-//         const jsonUsuarios = await AsyncStorage.getItem('USUARIOS_CADASTRADOS');
-//         return jsonUsuarios != null ? JSON.parse(jsonUsuarios) : [];
-//     } catch (erro) {
-//         console.error("Erro ao buscar usuários: ", erro);
-//         return [];
-//     }
-// };
-
 export function TelaEdicaoUsuario({ route, navigation }) {
     // O parâmetro 'route' será usado para receber os dados do usuário a ser editado.
 
@@ -54,17 +43,6 @@ export function TelaEdicaoUsuario({ route, navigation }) {
         };
 
         try {
-            // // Buscar a lista completa
-            // const listaAtual = await getUsuarios();
-
-            // // Mapear/Encontrar: Substituir o usuário antigo pelo novo, usando o ID
-            // const listaAtualizada = listaAtual.map(u =>
-            //     u.id === usuario.id ? usuarioEditado : u
-            // );
-
-            // // Salvar a nova lista no AsyncStorage
-            // await AsyncStorage.setItem('USUARIOS_CADASTRADOS', JSON.stringify(listaAtualizada));
-
             await editUser(usuarioEditado);
 
             Alert.alert('Sucesso', 'Dados do usuário atualizados!');

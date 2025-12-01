@@ -1,7 +1,7 @@
 // src/context/UserContext.js
 // importação
 
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Criar o Contexto
@@ -14,7 +14,7 @@ const STORAGE_KEY = '@CadastroApp:users';
 export function UserProvider({ children }) {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [termoBusca, setTermoBusca] = useState('');
 
 
     // Função para carregar os usuários
@@ -55,9 +55,31 @@ export function UserProvider({ children }) {
     };
 
     const deleteUser = async (idToDelete) => {
-        const updatedUsers = users.filter(u => u.id !== idToDelete);
-        setUsers(updatedUsers);
-        await saveUsers(updatedUsers);
+        // 💡 LOG 1: Veja o ID que chegou para ser deletado
+        console.log('ID para DELETAR:', idToDelete, ' | Tipo:', typeof idToDelete);
+
+        let newUsersList = [];
+
+        setUsers(prevUsers => {
+            newUsersList = prevUsers.filter(u => {
+
+                // 💡 LOG 2: Veja o ID do usuário atual na lista
+                if (u.id == idToDelete) {
+                    console.log('--- ENCONTROU UM MATCH! ---');
+                    console.log('ID do Usuário:', u.id, ' | Tipo:', typeof u.id);
+                }
+
+                // Usamos a comparação não estrita para este teste
+                return u.id != idToDelete;
+            });
+
+            // 💡 LOG 3: Verifique o tamanho da lista após o filtro
+            console.log('Tamanho da lista ANTES:', prevUsers.length, ' | Tamanho DEPOIS:', newUsersList.length);
+
+            return newUsersList;
+        });
+
+        await saveUsers(newUsersList);
     };
 
     const editUser = async (updatedUser) => {
@@ -71,6 +93,32 @@ export function UserProvider({ children }) {
         await saveUsers(updatedUsers);
     };
 
+    // LÓGICA DE FILTRAGEM // MUDOU!!!!
+    const usuariosFiltrados = useMemo(() => {
+        // Se não houver termo de busca, retorna a lista completa
+        if (!termoBusca) {
+            return users;
+        }
+
+        const lowerCaseTermo = termoBusca.toLowerCase();
+
+        // Filtra a lista com base no termo
+        return users.filter(usuario => {
+            const termo = termoBusca ? termoBusca.toLowerCase() : '';
+            return (
+                (usuario.nome && usuario.nome.toLowerCase().includes(termo)) ||
+                (usuario.cpf && usuario.cpf.toLowerCase().includes(termo)) ||
+                (usuario.dataNascimento && usuario.dataNascimento.toLowerCase().includes(termo))
+            );
+        });
+        // ...
+    }, [users, termoBusca]);
+
+    // Carregar dados na inicialização
+    useEffect(() => {
+        loadUsers();
+    }, []);
+
     // Carregar dados na inicialização
     useEffect(() => {
         loadUsers();
@@ -79,14 +127,13 @@ export function UserProvider({ children }) {
 
     // O valor que será fornecido para os componentes
     const contextValue = {
-        users,
+        users: usuariosFiltrados,
         loading,
         addUser,
-        editUser,   
-        deleteUser, 
-
-
-
+        editUser,
+        deleteUser,
+        termoBusca,
+        setTermoBusca,
 
     };
 
